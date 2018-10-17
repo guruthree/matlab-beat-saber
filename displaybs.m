@@ -1,5 +1,4 @@
-% needs boxes around symbols
-% diagonals are wrong
+% % diagonals are wrong
 
 clear
 
@@ -8,8 +7,9 @@ levelfile = 'Expert.json';
 songfile = 'song.ogg';
 
 % player settings
-displayfps = 1;
-dohitsound = 1;
+noteboxes = 1; % draw boxes around notes, not idea when enablefading = 1
+displayfps = 1; % display a frame rate counter in the top right
+dohitsound = 1; % play hitsound when a box should be hit
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
 enablefading = 0; % enable fading in of notes, big performance hit
@@ -77,6 +77,11 @@ hold on
 hits = zeros(size(notes));
 % array of handles to patch objects
 allph = cell(size(notes));
+if noteboxes == 1
+    longlineX = nan(1,6*length(notes));
+    longlineY = nan(1,6*length(notes));
+    longlineZ = nan(1,6*length(notes));
+end
 % loop through all notes in the json and draw them at the appriate
 % coordiantes
 for ii=1:length(notes)
@@ -92,8 +97,24 @@ for ii=1:length(notes)
     allph{ii} = patch(ones(size(TY{d}))*x, TY{d}+y, TZ{d}+z, c);
     allph{ii}.FaceAlpha = 0.5;
     
+    if noteboxes == 1
+        longlineX((ii-1)*6+1:(ii*6)-1) = x;
+        if d < 5 || d > 8
+%             line(ones(1,5)*x, [1 -1 -1 1 1]*0.4+y, [-1 -1 1 1 -1]*0.4+z, 'Color', 'k')
+            longlineY((ii-1)*6+1:(ii*6)-1) = [1 -1 -1 1 1]*0.4+y;
+            longlineZ((ii-1)*6+1:(ii*6)-1) = [-1 -1 1 1 -1]*0.4+z;
+        else % diagonal block
+%             line(ones(1,5)*x, [0 1 0 -1 0]*0.566+y, [-1 0 1 0 -1]*0.566+z, 'Color', 'k')
+            longlineY((ii-1)*6+1:(ii*6)-1) = [0 1 0 -1 0]*0.566+y;
+            longlineZ((ii-1)*6+1:(ii*6)-1) = [-1 0 1 0 -1]*0.566+z;
+        end
+    end
+    
 end
-hold off 
+if noteboxes == 1
+    line(longlineX, longlineY, longlineZ, 'Color', 'k')
+end
+hold off
 
 % sort all of the hits in order for playing the hitsound
 [hits2, k] = sort(hits);
