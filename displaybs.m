@@ -1,5 +1,3 @@
-% % diagonals are wrong
-
 clear
 
 % level settings
@@ -55,7 +53,7 @@ TYo = ([0 6 3]-3)*0.1;
 TZo = ([0 0 4.8]-4.8/2)*0.1;
 
 % the angles at which blocks are rotated
-angles = [0 180 90 270 315 45 135 225];
+angles = [0 180 90 270 45 315 135 225];
 
 % rotate the triangle coordinates appropriately
 for ii=1:length(angles)
@@ -88,11 +86,15 @@ for ii=1:length(notes)
 
     % convert the note position to time in seconds
     x = notes(ii).x_time/bpm*60;
-    hits(ii) = x;
     y = notes(ii).x_lineIndex + 1;
     z = notes(ii).x_lineLayer + 1;
+    % type 2 is a mine? ignore
+    if notes(ii).x_type > 1
+        continue
+    end
     c = colors{notes(ii).x_type+1};
     d = notes(ii).x_cutDirection+1;
+    hits(ii) = x;
     
     allph{ii} = patch(ones(size(TY{d}))*x, TY{d}+y, TZ{d}+z, c);
     allph{ii}.FaceAlpha = 0.5;
