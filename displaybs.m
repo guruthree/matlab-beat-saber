@@ -2,12 +2,18 @@
 % diagonals are wrong
 % needs settings at the top
 
+% level settings
+levelfile = 'Expert.json';
+songfile = 'song.ogg';
+
+% player settings
+hitsound = 'Wild Eep.wav';
+futuretime = [0 4]; % how much of the map to see in advance
+futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
+
 clear
 
-futuretime = [0 4];
-futurefadetime = [1 3.5];
-
-fid = fopen('Expert.json', 'r');
+fid = fopen(levelfile', 'r');
 
 contents = '';
 while ~feof(fid)
@@ -18,12 +24,12 @@ fclose(fid);
 
 data = jsondecode(contents);
 
-[Y,Fs] = audioread('song.ogg');
+[Y,Fs] = audioread(songfile);
 
 player = audioplayer(Y, Fs);
 % play(player)
 
-[eepY,eepFs] = audioread('Wild Eep.wav');
+[eepY,eepFs] = audioread(hitsound);
 eepplayers = cell(1,20);
 for ii=1:length(eepplayers)
     eepplayers{ii} = audioplayer(eepY, eepFs); %#ok<TNMLP>
