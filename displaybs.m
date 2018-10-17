@@ -2,6 +2,7 @@
 % diagonals are wrong
 % enable/disable hit sound
 % catch ctrl-c and stop music
+% enable fps display
 
 clear
 
@@ -35,6 +36,8 @@ player = audioplayer(Y, Fs);
 %% open hit sound
 [eepY,eepFs] = audioread(hitsound);
 eepplayers = cell(1,20);
+% setup multiple players for the sound so that we can play sound effect in
+% rapid succession
 for ii=1:length(eepplayers)
     eepplayers{ii} = audioplayer(eepY, eepFs); %#ok<TNMLP>
 end
@@ -43,13 +46,14 @@ end
 dirs = {'^', 'v', '<', '>', 'x', 'x', 'x', 'x', 'o'};
 colors = {'r', 'b'};
 TX = ones(1,3);
-TYo = [0 6 3]-3;
-TZo = [0 0 4.8]-4.8/2;
-TYo = TYo*0.1;
-TZo = TZo*0.1;
+% coordinates to draw a triangle poly
+TYo = ([0 6 3]-3)*0.1;
+TZo = ([0 0 4.8]-4.8/2)*0.1;
 
+% the angles at which blocks are rotated
 angles = [0 180 90 270 315 45 135 225];
 
+% rotate the triangle coordinates appropriately
 TY = cell(size(dirs));
 TZ = cell(size(dirs));
 for ii=1:length(angles)
@@ -61,12 +65,12 @@ for ii=1:length(angles)
     TZ{ii} = point(2,:);
 end
 
-r = 0.2;
+% create a circle for the circle blocks
 ang = 0:(pi/4):2*pi;
 cang = cos(ang);
 sang = sin(ang);
-xp=cang'*r;
-yp=sang'*r;
+xp=cang'*0.2;
+yp=sang'*0.2;
 TY{end}=xp;
 TZ{end}=yp;
 
@@ -74,9 +78,11 @@ clf
 hold on
 hits = zeros(size(notes));
 allph = cell(size(notes));
-
+% loop through all notes in the json and draw them at the appriate
+% coordiantes
 for ii=1:length(notes)
 
+    % convert the note position to time in seconds
     x = notes(ii).x_time/bpm*60;
     hits(ii) = x;
     y = notes(ii).x_lineIndex + 1;
@@ -90,12 +96,14 @@ for ii=1:length(notes)
 end
 hold off 
 
+% sort all of the hits in order for playing the hitsound
 [hits2, k] = sort(hits);
-allph = allph(k);
+allph = allph(k); % reorder the patch handles for play order
 hits3 = unique(hits2);
 
 axis image
 grid on
+box on
 
 ylim([0.5 4.5])
 zlim([0.5 3.5])
@@ -104,19 +112,20 @@ set(gca, 'YTick', 0:5)
 set(gca, 'ZTick', 0:5)
 set(gca, 'YDir', 'reverse')
 
-box on
-
 ylabel('lineIndex');
 zlabel('lineLayer');
 xlabel('time (seconds)');
 
+% initial view
 % view([-45 45])
 view([-45 20])
 % view([-85 10])
 
+% set tick marks at 1 second intervals for the whole song
 xl = xlim;
 set(gca, 'XTick', floor(min(xl)):(max(xl)+1))
 xlim(futuretime);
+% stretch out time
 set(gca,'DataAspectRatio',[0.5 1 1])
 drawnow
 
@@ -126,12 +135,14 @@ pos = 0;
 
 yl = ylim;
 zl = zlim;
+
+% create coordinates for a rectangle patch that is the where the player
+% stands
 X = zeros(1,4);
 Y = [yl(1) yl(2) yl(2) yl(1)];
 Z = [zl(1) zl(1) zl(2) zl(2)];
 tzero = patch(X, Y, Z, 'k');
 set(tzero, 'FaceAlpha', 0.2);
-set(gcf,'Renderer','painters')
 
 hat = 1;
 eepat = 1;
@@ -153,22 +164,21 @@ while time < xl(2)
 
     % fade the markers
     if enablefading == 1
+        % calculate what the alpha value of the blocks should be for the
+        % current time
         alpha = (hits2 - futurefadetime(1) - time)/futurefadetime(2);
         alpha = 1-min([alpha ones(size(alpha))]'); %#ok<UDIM>
         alpha = min([alpha; ones(size(alpha))]);
+        % find the blocks that are currently being displayed
         k = (hits2-time) > -0.1 & (hits2-time) < futuretime(2)+time;
+        % randomly pick out only some blocks to update the alpha of, this
+        % is needed because setting FaceAlpha takes a lot of time
         k(find(k == 1, 1):3:end) = 0;
-        cellfun(@(x,y)set(x, 'FaceAlpha', y), allph(k), num2cell(alpha(k))')
-        for ii=1:length(hits)
-            if hits(ii) - futurefadetime(1) - time <= 0
-                allph{ii}.FaceAlpha = 1;
-            elseif hits(ii) - futurefadetime(2) - time > 0
-                allph{ii}.FaceAlpha = 0.2;
-            end
-                
-            set(allph{ii}, 'FaceAlpha', alpha(ii))
-        end
+        % set the face alpha of all note blocks at once
+        cellfun(@(x,y)set(x, 'FaceAlpha', y), allph(k), num2cell(alpha(k))');
     end
+    
+    % looping
     lasttime = time;
     time = toc(timer);
 %     1/(time-lasttime)
