@@ -10,6 +10,7 @@ displayfps = 1; % display a frame rate counter in the top right
 dohitsound = 1; % play hitsound when a box should be hit
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
+timestretch = 2; % how much to stretch the time axis (greater for busier songs)
 enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
@@ -153,7 +154,7 @@ xl = xlim;
 set(gca, 'XTick', floor(min(xl)):(max(xl)+1))
 xlim(futuretime);
 % stretch out time
-set(gca,'DataAspectRatio',[0.5 1 1])
+set(gca,'DataAspectRatio',[1/timestretch 1 1])
 drawnow
 
 %% play level
