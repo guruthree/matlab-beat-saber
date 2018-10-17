@@ -1,6 +1,5 @@
 % needs boxes around symbols
 % diagonals are wrong
-% needs settings at the top
 
 % level settings
 levelfile = 'Expert.json';
@@ -9,7 +8,7 @@ songfile = 'song.ogg';
 % player settings
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
-enablefading = 0; % enable fading in of notes
+enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
 clear
