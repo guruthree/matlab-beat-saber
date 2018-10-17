@@ -44,9 +44,12 @@ if dohitsound == 1
 end
 
 %% render level
-dirs = {'^', 'v', '<', '>', 'x', 'x', 'x', 'x', 'o'};
-colors = {'r', 'b'};
+% coordinates for patchs to represent each note
+TY = cell(1, 9);
+TZ = cell(1, 9);
 TX = ones(1,3);
+% colors of the blocks
+colors = {'r', 'b'};
 % coordinates to draw a triangle poly
 TYo = ([0 6 3]-3)*0.1;
 TZo = ([0 0 4.8]-4.8/2)*0.1;
@@ -55,29 +58,24 @@ TZo = ([0 0 4.8]-4.8/2)*0.1;
 angles = [0 180 90 270 315 45 135 225];
 
 % rotate the triangle coordinates appropriately
-TY = cell(size(dirs));
-TZ = cell(size(dirs));
 for ii=1:length(angles)
     theta = angles(ii);
     R = [cosd(theta) -sind(theta); sind(theta) cosd(theta)];
-    point = [TYo; TZo];
-    point = R*point;
+    point = R*[TYo; TZo];
     TY{ii} = point(1,:);
     TZ{ii} = point(2,:);
 end
 
 % create a circle for the circle blocks
 ang = 0:(pi/4):2*pi;
-cang = cos(ang);
-sang = sin(ang);
-xp=cang'*0.2;
-yp=sang'*0.2;
-TY{end}=xp;
-TZ{end}=yp;
+TY{end} = cos(ang)'*0.2;
+TZ{end} = sin(ang)'*0.2;
 
 clf
 hold on
+% array of the times at which all blocks occur
 hits = zeros(size(notes));
+% array of handles to patch objects
 allph = cell(size(notes));
 % loop through all notes in the json and draw them at the appriate
 % coordiantes
@@ -105,6 +103,7 @@ if dohitsound == 1
     hits3 = unique(hits2);
 end
 
+% format the plot, setup the axis limits, etc
 axis image
 grid on
 box on
@@ -114,6 +113,7 @@ zlim([0.5 3.5])
 
 set(gca, 'YTick', 0:5)
 set(gca, 'ZTick', 0:5)
+% the column coordinates are backwards from what we expect, so flip
 set(gca, 'YDir', 'reverse')
 
 ylabel('lineIndex');
@@ -135,8 +135,8 @@ drawnow
 
 %% play level
 timer = tic;
-pos = 0;
 
+% axis limits for convience
 yl = ylim;
 zl = zlim;
 
@@ -156,13 +156,18 @@ time = toc(timer);
 play(player)
 try
 while time < xl(2)
+    % move along the plot in time to the song
     xlim(futuretime+time);
+    % update the location of the box indicating player position
     set(tzero,'XData',ones(1,4)*time)
     drawnow
     
+    % play the hit sounds for any blocks that have passed the player since
+    % the last frame
     if dohitsound == 1 && time >= hits3(hat)
         play(eepplayers{eepat})
         hat = hat + 1;
+        % rotate through the hit sound players
         eepat = eepat + 1;
         if eepat > length(eepplayers)
             eepat = 1;
