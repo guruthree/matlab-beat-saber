@@ -1,6 +1,5 @@
 % needs boxes around symbols
 % diagonals are wrong
-% enable fps display
 
 clear
 
@@ -9,6 +8,7 @@ levelfile = 'Expert.json';
 songfile = 'song.ogg';
 
 % player settings
+displayfps = 1;
 dohitsound = 1;
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
@@ -148,6 +148,10 @@ Z = [zl(1) zl(1) zl(2) zl(2)];
 tzero = patch(X, Y, Z, 'k');
 set(tzero, 'FaceAlpha', 0.2);
 
+if displayfps == 1
+    texth = text(1, 1, '0 fps', 'Units', 'normalized', 'HorizontalAlignment', 'right', 'VerticalAlignment', 'top');
+end
+
 hat = 1;
 if dohitsound == 1
     eepat = 1;
@@ -193,7 +197,10 @@ while time < xl(2)
     % looping
     lasttime = time;
     time = toc(timer);
-%     1/(time-lasttime)
+    if displayfps == 1
+        fps = 1/(time-lasttime);
+        texth.String = sprintf('%0.1f fps', fps);
+    end
 end
 catch
     stop(player)
