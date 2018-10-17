@@ -1,6 +1,5 @@
 % needs boxes around symbols
 % diagonals are wrong
-% enable/disable hit sound
 % catch ctrl-c and stop music
 % enable fps display
 
@@ -11,6 +10,7 @@ levelfile = 'Expert.json';
 songfile = 'song.ogg';
 
 % player settings
+dohitsound = 1;
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
 enablefading = 0; % enable fading in of notes, big performance hit
@@ -34,12 +34,14 @@ bpm = data.x_beatsPerMinute;
 player = audioplayer(Y, Fs);
 
 %% open hit sound
-[eepY,eepFs] = audioread(hitsound);
-eepplayers = cell(1,20);
-% setup multiple players for the sound so that we can play sound effect in
-% rapid succession
-for ii=1:length(eepplayers)
-    eepplayers{ii} = audioplayer(eepY, eepFs); %#ok<TNMLP>
+if dohitsound == 1
+    [eepY,eepFs] = audioread(hitsound);
+    eepplayers = cell(1,20);
+    % setup multiple players for the sound so that we can play sound effect in
+    % rapid succession
+    for ii=1:length(eepplayers)
+        eepplayers{ii} = audioplayer(eepY, eepFs); %#ok<TNMLP>
+    end
 end
 
 %% render level
@@ -99,7 +101,10 @@ hold off
 % sort all of the hits in order for playing the hitsound
 [hits2, k] = sort(hits);
 allph = allph(k); % reorder the patch handles for play order
-hits3 = unique(hits2);
+% we only need to play the sound once
+if dohitsound == 1
+    hits3 = unique(hits2);
+end
 
 axis image
 grid on
@@ -145,7 +150,9 @@ tzero = patch(X, Y, Z, 'k');
 set(tzero, 'FaceAlpha', 0.2);
 
 hat = 1;
-eepat = 1;
+if dohitsound == 1
+    eepat = 1;
+end
 time = toc(timer);
 play(player)
 while time < xl(2)
@@ -153,7 +160,7 @@ while time < xl(2)
     set(tzero,'XData',ones(1,4)*time)
     drawnow
     
-    if time >= hits3(hat)
+    if dohitsound == 1 && time >= hits3(hat)
         play(eepplayers{eepat})
         hat = hat + 1;
         eepat = eepat + 1;
