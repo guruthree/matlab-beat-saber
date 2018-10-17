@@ -1,6 +1,5 @@
 % needs boxes around symbols
 % diagonals are wrong
-% catch ctrl-c and stop music
 % enable fps display
 
 clear
@@ -155,6 +154,7 @@ if dohitsound == 1
 end
 time = toc(timer);
 play(player)
+try
 while time < xl(2)
     xlim(futuretime+time);
     set(tzero,'XData',ones(1,4)*time)
@@ -190,6 +190,6 @@ while time < xl(2)
     time = toc(timer);
 %     1/(time-lasttime)
 end
-
-%% clean up
-clear player eepplayers
+catch
+    stop(player)
+end
