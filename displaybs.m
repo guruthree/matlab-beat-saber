@@ -9,6 +9,7 @@ songfile = 'song.ogg';
 % player settings
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
+enablefading = 0; % enable fading in of notes
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
 clear
@@ -172,21 +173,23 @@ while time < xl(2)
     end
 
     % fade the markers
-%     alpha = (hits2 - futurefadetime(1) - time)/futurefadetime(2);
-%     alpha = 1-min([alpha ones(size(alpha))]'); %#ok<UDIM>
-%     alpha = min([alpha; ones(size(alpha))]);
-%     k = (hits2-time) > -0.1 & (hits2-time) < futuretime(2)+time;
-%     k(find(k == 1, 1):3:end) = 0;
-%     cellfun(@(x,y)set(x, 'FaceAlpha', y), allph(k), num2cell(alpha(k))')
-%     for ii=1:length(hits)
-% %         if hits(ii) - futurefadetime(1) - time <= 0
-%             allph{ii}.FaceAlpha = 1;
-%         elseif hits(ii) - futurefadetime(2) - time > 0
-%             allph{ii}.FaceAlpha = 0.2;
-%         end
-%             
-%         set(allph{ii}, 'FaceAlpha', alpha(ii))
-%     end
+    if enablefading == 1
+        alpha = (hits2 - futurefadetime(1) - time)/futurefadetime(2);
+        alpha = 1-min([alpha ones(size(alpha))]'); %#ok<UDIM>
+        alpha = min([alpha; ones(size(alpha))]);
+        k = (hits2-time) > -0.1 & (hits2-time) < futuretime(2)+time;
+        k(find(k == 1, 1):3:end) = 0;
+        cellfun(@(x,y)set(x, 'FaceAlpha', y), allph(k), num2cell(alpha(k))')
+        for ii=1:length(hits)
+            if hits(ii) - futurefadetime(1) - time <= 0
+                allph{ii}.FaceAlpha = 1;
+            elseif hits(ii) - futurefadetime(2) - time > 0
+                allph{ii}.FaceAlpha = 0.2;
+            end
+                
+            set(allph{ii}, 'FaceAlpha', alpha(ii))
+        end
+    end
     lasttime = time;
     time = toc(timer);
 %     1/(time-lasttime)
