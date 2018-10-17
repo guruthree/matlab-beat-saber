@@ -1,5 +1,8 @@
 % needs boxes around symbols
 % diagonals are wrong
+% enable/disable hit sound
+
+clear
 
 % level settings
 levelfile = 'Expert.json';
@@ -11,35 +14,31 @@ futuretime = [0 4]; % how much of the map to see in advance
 enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
-clear
-
+%% read in json file
 fid = fopen(levelfile', 'r');
-
 contents = '';
 while ~feof(fid)
     contents = sprintf('%s %s', contents, fgetl(fid));
 end
-
 fclose(fid);
-
 data = jsondecode(contents);
 
+% settings from json
+notes = data.x_notes;
+bpm = data.x_beatsPerMinute;
+
+%% open song file
 [Y,Fs] = audioread(songfile);
-
 player = audioplayer(Y, Fs);
-% play(player)
 
+%% open hit sound
 [eepY,eepFs] = audioread(hitsound);
 eepplayers = cell(1,20);
 for ii=1:length(eepplayers)
     eepplayers{ii} = audioplayer(eepY, eepFs); %#ok<TNMLP>
 end
 
-notes = data.x_notes;
-bpm = data.x_beatsPerMinute;
-
-%%
-
+%% render level
 dirs = {'^', 'v', '<', '>', 'x', 'x', 'x', 'x', 'o'};
 colors = {'r', 'b'};
 TX = ones(1,3);
@@ -70,24 +69,20 @@ yp=sang'*r;
 TY{end}=xp;
 TZ{end}=yp;
 
-% return
-
 clf
 hold on
 hits = zeros(size(notes));
 allph = cell(size(notes));
+
 for ii=1:length(notes)
-    
+
     x = notes(ii).x_time/bpm*60;
     hits(ii) = x;
     y = notes(ii).x_lineIndex + 1;
     z = notes(ii).x_lineLayer + 1;
     c = colors{notes(ii).x_type+1};
-%     d = dirs{notes(ii).x_cutDirection+1};
     d = notes(ii).x_cutDirection+1;
     
-%     allph{ii} = scatter3(x, y, z, d, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', c);%, 'MarkerSize', 20);
-%     allph{ii}.SizeData = 800;
     allph{ii} = patch(ones(size(TY{d}))*x, TY{d}+y, TZ{d}+z, c);
     allph{ii}.FaceAlpha = 0.5;
     
@@ -100,9 +95,6 @@ hits3 = unique(hits2);
 
 axis image
 grid on
-% xlim([0 5])
-% xlim([5 30])
-% xlim([30 60])
 
 ylim([0.5 4.5])
 zlim([0.5 3.5])
@@ -127,20 +119,7 @@ xlim(futuretime);
 set(gca,'DataAspectRatio',[0.5 1 1])
 drawnow
 
-%%
-% for ii=1:1%length(allph)
-%     x = allph{ii}.XData;
-% %     c = [allph{ii}.Color 0.5];
-%     m = allph{ii}.MarkerHandle.get;
-%     c = m.FaceColorData;
-%     c(4) = 127;
-% %     allph{ii}.Color = c;
-%     m.FaceColorData = c;
-%         m.FaceColorData 
-% end
-% drawnow
-
-%%
+%% play level
 timer = tic;
 pos = 0;
 
@@ -194,8 +173,5 @@ while time < xl(2)
 %     1/(time-lasttime)
 end
 
-
-%%
-
-
+%% clean up
 clear player eepplayers
