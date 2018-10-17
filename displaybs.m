@@ -1,6 +1,7 @@
 % needs boxes around symbols
 % diagonals are wrong
 % enable/disable hit sound
+% catch ctrl-c and stop music
 
 clear
 
@@ -15,7 +16,7 @@ enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
 %% read in json file
-fid = fopen(levelfile', 'r');
+fid = fopen(levelfile, 'r');
 contents = '';
 while ~feof(fid)
     contents = sprintf('%s %s', contents, fgetl(fid));
