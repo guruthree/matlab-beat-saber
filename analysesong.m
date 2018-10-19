@@ -53,10 +53,12 @@ toc
 clf
 drawnow
 stime = (1:numFFTs)*(FFTlength/FFToverlap)/Fs;
-pcolor(stime, F, allPxx')
+% pcolor(stime, F, allPxx')
+pcolor(stime, F, log10(allPxx'))
 shading flat
+ylim([0 16000])
 % ylim([0 FFTlength/2])
-ylim([0 1536])
+% ylim([0 1536])
 % ylim([0 4000])
 % ylim([0 2000])
 % ylim([0 1000])
@@ -64,9 +66,20 @@ ylim([0 1536])
 % ylim([0 250])
 % xlim([0 20])
 
+% set(gca, 'YScale', 'log')
+cb = colorbar();
+% cb.Ruler.Scale = 'log';
+% cb.Ruler.MinorTick = 'on';
+% set(gca,'colorscale','log')
+caxis([-10 -2])
+
 xlabel('Time (seconds)')
 ylabel('Frequency (Hz)')
+ylabel(cb, 'signal (dB)') % maybe?
 drawnow
+
+% bin the frequencies like a graphic equaliser? according to notes?
+% f = round(2^((p-69)/12)*440) 
 
 % return
 %%
