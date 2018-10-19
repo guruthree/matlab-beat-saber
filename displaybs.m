@@ -122,6 +122,8 @@ hold off
 % sort all of the hits in order for playing the hitsound
 [hits2, k] = sort(hits);
 allph = allph(k); % reorder the patch handles for play order
+allph = allph(hits2 > 0); % do not count hits at time zero
+hits2 = hits2(hits2 > 0);
 % we only need to play the sound once
 if dohitsound == 1
     hits3 = unique(hits2);
