@@ -75,7 +75,7 @@ hold on
 % array of the times at which all blocks occur
 hits = zeros(size(notes));
 % array of handles to patch objects
-allph = cell(size(notes));
+allph(1:length(notes)) = patch;
 if noteboxes == 1
     longlineX = nan(1,6*length(notes));
     longlineY = nan(1,6*length(notes));
@@ -97,8 +97,8 @@ for ii=1:length(notes)
     d = notes(ii).x_cutDirection+1;
     hits(ii) = x;
     
-    allph{ii} = patch(ones(size(TY{d}))*x, TY{d}+y, TZ{d}+z, c);
-    allph{ii}.FaceAlpha = 0.5;
+    allph(ii) = patch(ones(size(TY{d}))*x, TY{d}+y, TZ{d}+z, c);
+    allph(ii).FaceAlpha = 0.5;
     
     if noteboxes == 1
         longlineX((ii-1)*6+1:(ii*6)-1) = x;
@@ -215,7 +215,7 @@ while time < xl(2)
         % is needed because setting FaceAlpha takes a lot of time
         k(find(k == 1, 1):3:end) = 0;
         % set the face alpha of all note blocks at once
-        cellfun(@(x,y)set(x, 'FaceAlpha', y), allph(k), num2cell(alpha(k))');
+        set(allph(k), {'FaceAlpha'}, num2cell(alpha(k))')
     end
     
     % looping
