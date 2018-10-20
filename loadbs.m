@@ -15,6 +15,9 @@ function [data, Y, Fs] = loadbs(folder, levelfile, songfile)
         k = cellfun(@(x)~isempty(x), strfind({list(:).name}, 'ogg'));
         songfile = list(find(k == 1, 1)).name;
     end
+    
+    % TODO check if there is a levelfile, and if it doesn't pick one out
+    % like we do log
 
     %% read in json file
     fid = fopen(sprintf('%s%s%s', folder, filesep, levelfile), 'r');
