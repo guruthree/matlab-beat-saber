@@ -14,21 +14,14 @@ timestretch = 2; % how much to stretch the time axis (greater for busier songs)
 enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
-%% read in json file
-fid = fopen(levelfile, 'r');
-contents = '';
-while ~feof(fid)
-    contents = sprintf('%s %s', contents, fgetl(fid));
-end
-fclose(fid);
-data = jsondecode(contents);
+%% read in level
+[data, Y, Fs] = loadbs('.', levelfile, songfile);
 
 % settings from json
 notes = data.x_notes;
 bpm = data.x_beatsPerMinute;
 
-%% open song file
-[Y,Fs] = audioread(songfile);
+% setup music player
 player = audioplayer(Y, Fs);
 
 %% open hit sound
