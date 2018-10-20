@@ -17,10 +17,12 @@ player = audioplayer(Y, Fs);
 
 % FFTlength = 2048;
 % FFTlength = 4096;
-FFTlength = 8192;
+% FFTlength = 8192;
+FFTlength = 16384;
 % FFToverlap = 1;
-FFToverlap = 4;
-% FFToverlap = 8;
+% FFToverlap = 2;
+% FFToverlap = 4;
+FFToverlap = 8;
 % numFFTs = floor(length(Y)/(FFTlength/FFToverlap));
 numFFTs = floor(length(Y)/FFTlength/FFToverlap)*FFToverlap*FFToverlap;
 % window = ones(1,FFTlength);
@@ -50,33 +52,40 @@ fprintf('done. ');
 toc
 
 %%
+% ylog = 0;
+Ylog = 1;
+
+logbase = 32;
+mylog = @(x)log(x)/log(logbase);
+
 clf
 drawnow
 stime = (1:numFFTs)*(FFTlength/FFToverlap)/Fs;
-% pcolor(stime, F, allPxx')
-pcolor(stime, F, log10(allPxx'))
+if ylog == 0
+    pcolor(stime, F, log10(allPxx'))
+    ylim([0 1000])
+%     ylim([0 8000])
+%     ylim([0 16000])
+%     ylim([0 FFTlength/2])
+else
+    pcolor(stime, mylog(F), log10(allPxx'))
+    ylim(mylog([32 8192]))
+end
 shading flat
-ylim([0 16000])
-% ylim([0 FFTlength/2])
-% ylim([0 1536])
-% ylim([0 4000])
-% ylim([0 2000])
-% ylim([0 1000])
-% ylim([0 500])
-% ylim([0 250])
-% xlim([0 20])
 
-% set(gca, 'YScale', 'log')
 cb = colorbar();
-% cb.Ruler.Scale = 'log';
-% cb.Ruler.MinorTick = 'on';
-% set(gca,'colorscale','log')
 caxis([-10 -2])
 
 xlabel('Time (seconds)')
 ylabel('Frequency (Hz)')
 ylabel(cb, 'signal (dB)') % maybe?
 drawnow
+
+if ylog == 1
+    yts = get(gca, 'YTick');
+    lab = cellfun(@(x)sprintf('%.0f', x), num2cell(logbase.^yts), 'UniformOutput', 0);
+    set(gca, 'YTickLabel', lab);
+end
 
 % bin the frequencies like a graphic equaliser? according to notes?
 % f = round(2^((p-69)/12)*440) 
