@@ -2,6 +2,9 @@ clear
 clc
 fig = figure(99);
 clf
+%%
+
+levelfolder = '.'; % folder with Expert.json and a .ogg file
 
 %%
 fig.Color = 'w';
@@ -18,3 +21,6 @@ ax(1) = axes('Position', [0.05 0.58 0.57 0.4]); % main PSD
 ax(2) = axes('Position', [0.66 0.58 0.32 0.18]); % mini PSD
 ax(3) = axes('Position', [0.66 0.80 0.32 0.18], 'XTickLabel', []); % samples
 ax(4) = axes('Position', [0.05 0.05 0.45 0.45]); % 3d level display
+
+%% read in level
+[data, Y, Fs] = loadbs(levelfolder);
