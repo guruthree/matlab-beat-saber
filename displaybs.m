@@ -1,8 +1,4 @@
-clear
-
-% level settings
-levelfile = 'Expert.json';
-songfile = 'song.ogg';
+function [handle, stime, samples] = displaybs(ax, data, Y, Fs, currenttime)
 
 % player settings
 noteboxes = 1; % draw boxes around notes, not idea when enablefading = 1
@@ -13,9 +9,6 @@ futuretime = [0 4]; % how much of the map to see in advance
 timestretch = 2; % how much to stretch the time axis (greater for busier songs)
 enablefading = 0; % enable fading in of notes, big performance hit
 futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
-
-%% read in level
-[data, Y, Fs] = loadbs('.', levelfile, songfile);
 
 % settings from json
 notes = data.x_notes;
