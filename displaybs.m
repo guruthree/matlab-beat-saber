@@ -1,4 +1,4 @@
-function handle = displaybs(ax, data, currenttime)
+function [handle, hits] = displaybs(ax, data, currenttime)
 
     % level display settings
     noteboxes = 1; % draw boxes around notes, not idea when enablefading = 1

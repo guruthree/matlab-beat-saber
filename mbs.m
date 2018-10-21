@@ -9,6 +9,8 @@ clf(fig)
 levelfolder = '.'; % folder with Expert.json and a .ogg file
 currenttime = 0; % start time
 timewindow = [-1 9]; % focus for zoomed in plots
+hitsound = 'Wild Eep.wav';
+displayfps = 1; % display a frame rate counter in the top right
 
 %% setup figure
 fig.Color = 'w';
@@ -49,5 +51,55 @@ disp('done')
 
 %% main plot of level
 
-handles(4) = displaybs(ax(4), data, currenttime);
+[handles(4), hits] = displaybs(ax(4), data, currenttime);
 xlim(ax(4), timewindow+currenttime)
+
+%% interface controls
+
+buttonwidth = 0.05;
+buttonheight = 0.04;
+buttons(1) = uicontrol('Style', 'pushbutton', 'String', 'Play All', 'Units', 'normalized', ...
+    'Position', [0.4 0.02 buttonwidth buttonheight]);
+
+% TODO stop button
+% TODO play selection button
+
+if displayfps == 1
+    handles(5) = text(ax(3), 1, 1, '0 fps', 'Units', 'normalized', 'HorizontalAlignment', 'right', 'VerticalAlignment', 'bottom');
+else
+    handles(5) = [];
+end
+
+%% setup playing
+
+global eepplayers mytime lasttime
+mytime = tic;
+lasttime = 0;
+
+if ~isempty(hitsound)
+    % open hit sound
+    [eepY,eepFs] = audioread(hitsound);
+    eepplayers = cell(20,2);
+    % setup multiple players for the sound so that we can play sound effect in
+    % rapid succession
+    for ii=1:length(eepplayers)
+        eepplayers{ii,1} = audioplayer(eepY, eepFs); %#ok<TNMLP>
+        eepplayers{ii,1} = 0;
+    end
+    eepplayers{1,1} = 1;
+    
+    % sort all of the hits in order for playing the hitsound
+    hits2 = sort(hits);
+    % we only need to play the sound once
+    hits2 = unique(hits2(hits2 > 0));
+else
+    % no hit sounds
+    eepplayers = [];
+end
+
+% setup music player
+player = audioplayer(Y, Fs);
+player.TimerPeriod = 1/5; % target 60 fps?
+player.TimerFcn = @(object, event_obj)doplay(object, ax, handles, timewindow, stime, samples, hits2);
+% buttons(1).ButtonDownFcn = @()play(player);
+buttons(1).Callback = @(src, event)play(player);
