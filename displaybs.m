@@ -7,8 +7,6 @@ dohitsound = 1; % play hitsound when a box should be hit
 hitsound = 'Wild Eep.wav';
 futuretime = [0 4]; % how much of the map to see in advance
 timestretch = 2; % how much to stretch the time axis (greater for busier songs)
-enablefading = 0; % enable fading in of notes, big performance hit
-futurefadetime = [1 3.5]; % if fading is enabled, the range to fade over
 
 % settings from json
 notes = data.x_notes;
@@ -190,22 +188,6 @@ while time < xl(2)
         end
     end
 
-    % fade the markers
-    if enablefading == 1
-        % calculate what the alpha value of the blocks should be for the
-        % current time
-        alpha = (hits2 - futurefadetime(1) - time)/futurefadetime(2);
-        alpha = 1-min([alpha ones(size(alpha))]'); %#ok<UDIM>
-        alpha = min([alpha; ones(size(alpha))]);
-        % find the blocks that are currently being displayed
-        k = (hits2-time) > -0.1 & (hits2-time) < futuretime(2)+time;
-        % randomly pick out only some blocks to update the alpha of, this
-        % is needed because setting FaceAlpha takes a lot of time
-        k(find(k == 1, 1):3:end) = 0;
-        % set the face alpha of all note blocks at once
-        set(allph(k), {'FaceAlpha'}, num2cell(alpha(k))')
-    end
-    
     % looping
     lasttime = time;
     time = toc(timer);
