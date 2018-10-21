@@ -33,11 +33,12 @@ xlabel(ax(4), 'Time (seconds)')
 
 %% psd plot
 
+% TODO cache analysis results
 [allPxx, F, ptime] = analysesong(Y, Fs);
-handles(1) = displayanalysis(ax(1), allPxx, F, ptime);
+handles(1) = displayanalysis(ax(1), allPxx, F, ptime, currenttime);
 xlim(ax(1), timewindow+currenttime)
 drawnow
-handles(2) = displayanalysis(ax(2), allPxx, F, ptime);
+handles(2) = displayanalysis(ax(2), allPxx, F, ptime, currenttime);
 
 %% samples plot
 
@@ -48,5 +49,5 @@ disp('done')
 
 %% main plot of level
 
-handles(4) = displaybs(ax(4), data);
+handles(4) = displaybs(ax(4), data, currenttime);
 xlim(ax(4), timewindow+currenttime)

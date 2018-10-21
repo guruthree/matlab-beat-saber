@@ -1,4 +1,4 @@
-function handle = displaybs(ax, data)
+function handle = displaybs(ax, data, currenttime)
 
     % level display settings
     noteboxes = 1; % draw boxes around notes, not idea when enablefading = 1
@@ -115,7 +115,7 @@ function handle = displaybs(ax, data)
 
     % create coordinates for a rectangle patch that is the where the player
     % stands
-    X = zeros(1,4);
+    X = ones(1,4)*currenttime;
     yl = ylim(ax);
     zl = zlim(ax);
     Y = [yl(1) yl(2) yl(2) yl(1)];

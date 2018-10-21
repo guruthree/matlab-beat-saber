@@ -1,4 +1,4 @@
-function handle = displayanalysis(ax, allPxx, F, ptime)
+function handle = displayanalysis(ax, allPxx, F, ptime, currenttime)
 
 %     ylog = 0;
     ylog = 1;
@@ -8,7 +8,6 @@ function handle = displayanalysis(ax, allPxx, F, ptime)
 
     % TODO bin the frequencies like a graphic equaliser? according to notes?
     % f = round(2^((p-69)/12)*440) 
-
     
     if ylog == 0
         pcolor(ax, ptime, F, log10(allPxx'))
@@ -30,7 +29,7 @@ function handle = displayanalysis(ax, allPxx, F, ptime)
 
     yl = ylim(ax);
     hold(ax, 'on')
-    handle = line(ax, [1 1]*ptime(1), yl, 'Color', 'w');
+    handle = line(ax, [1 1]*currenttime, yl, 'Color', 'w');
     hold(ax, 'off')
 
     xlabel(ax, 'Time (seconds)')
