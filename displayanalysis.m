@@ -1,52 +1,41 @@
-function displayanalysis(ax)
+function handle = displayanalysis(ax, allPxx, F, ptime)
 
-%%
-% ylog = 0;
-Ylog = 1;
+%     ylog = 0;
+    ylog = 1;
 
-logbase = 32;
-mylog = @(x)log(x)/log(logbase);
+    logbase = 32;
+    mylog = @(x)log(x)/log(logbase);
 
-clf
-drawnow
-ptime = (1:numFFTs)*(FFTlength/FFToverlap)/Fs;
-if ylog == 0
-    pcolor(ptime, F, log10(allPxx'))
-    ylim([0 1000])
-%     ylim([0 8000])
-%     ylim([0 16000])
-%     ylim([0 FFTlength/2])
-else
-    pcolor(ptime, mylog(F), log10(allPxx'))
-    ylim(mylog([32 8192]))
-end
-shading flat
+    % TODO bin the frequencies like a graphic equaliser? according to notes?
+    % f = round(2^((p-69)/12)*440) 
 
-cb = colorbar();
-caxis([-10 -2])
+    
+    if ylog == 0
+        pcolor(ax, ptime, F, log10(allPxx'))
+        ylim(ax, [0 FFTlength/2])
+    else
+        pcolor(ax, ptime, mylog(F), log10(allPxx'))
+        ylim(ax, mylog([32 8192]))
+    end
+    shading(ax, 'flat')
 
-xlabel('Time (seconds)')
-ylabel('Frequency (Hz)')
-ylabel(cb, 'signal (dB)') % maybe?
-drawnow
+    caxis(ax, [-10 -2])
 
-if ylog == 1
-    yts = get(gca, 'YTick');
-    lab = cellfun(@(x)sprintf('%.0f', x), num2cell(logbase.^yts), 'UniformOutput', 0);
-    set(gca, 'YTickLabel', lab);
-end
+    xlabel(ax, 'Time (seconds)')
+    ylabel(ax, 'Frequency (Hz)')
 
-% bin the frequencies like a graphic equaliser? according to notes?
-% f = round(2^((p-69)/12)*440) 
+    if ylog == 1
+        yts = get(ax, 'YTick');
+        lab = cellfun(@(x)sprintf('%.0f', x), num2cell(logbase.^yts), 'UniformOutput', 0);
+        set(ax, 'YTickLabel', lab);
+    end
 
-% return
-%%
-yl = ylim;
-hold on
-lh = line([1 1]*ptime(1), yl, 'Color', 'w');
-hold off
-xl = xlim;
-% xlimits = xl;
-xlimits = [-1 20];
-xlim(xlimits)
+    yl = ylim(ax);
+    hold(ax, 'on')
+    handle = line(ax, [1 1]*ptime(1), yl, 'Color', 'w');
+    hold(ax, 'off')
 
+    xlabel(ax, 'Time (seconds)')
+    ylabel(ax, 'Frequency (Hz)')
+    
+    drawnow

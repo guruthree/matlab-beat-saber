@@ -18,3 +18,5 @@ function [handle, stime, samples] = displaysamples(ax, Y, Fs, currenttime)
     
     ylabel(ax, 'Sample Level [-]')
     ax.XTickLabel = [];
+    
+    drawnow
