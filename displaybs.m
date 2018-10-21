@@ -1,8 +1,11 @@
-function [handle, stime, samples] = displaybs(ax, data, currenttime)
+function handle = displaybs(ax, data)
 
     % level display settings
     noteboxes = 1; % draw boxes around notes, not idea when enablefading = 1
     timestretch = 2; % how much to stretch the time axis (greater for busier songs)
+    
+    % colors of the blocks
+    colors = {'r', 'b'};
 
     % settings from json
     notes = data.x_notes;
@@ -11,8 +14,7 @@ function [handle, stime, samples] = displaybs(ax, data, currenttime)
     % coordinates for patchs to represent each note
     TY = cell(1, 9);
     TZ = cell(1, 9);
-    % colors of the blocks
-    colors = {'r', 'b'};
+    
     % coordinates to draw a triangle poly
     TYo = ([0 6 3]-3)*0.1;
     TZo = ([0 0 4.8]-4.8/2)*0.1;
@@ -80,35 +82,45 @@ function [handle, stime, samples] = displaybs(ax, data, currenttime)
     if noteboxes == 1
         line(longlineX, longlineY, longlineZ, 'Color', 'k')
     end
-    hold off
+    hold(ax, 'off')
 
     % format the plot, setup the axis limits, etc
-    axis image
-    grid on
-    box on
+    axis(ax, 'image')
+    grid(ax, 'on');
+    box(ax, 'on');
 
-    ylim([0.5 4.5])
-    zlim([0.5 3.5])
+    ylim(ax, [0.5 4.5])
+    zlim(ax, [0.5 3.5])
 
     set(ax, 'YTick', 0:5)
     set(ax, 'ZTick', 0:5)
     % the column coordinates are backwards from what we expect, so flip
     set(ax, 'YDir', 'reverse')
 
-    ylabel('lineIndex');
-    zlabel('lineLayer');
-    xlabel('Time (seconds)');
+    ylabel(ax, 'lineIndex');
+    zlabel(ax, 'lineLayer');
+    xlabel(ax, 'Time (seconds)');
 
     % initial view
-    % view([-45 45])
-    view([-45 20])
-    % view([-85 10])
+    % view(ax, [-45 45])
+    view(ax, [-45 20])
+    % view(ax, [-85 10])
 
     % set tick marks at 1 second intervals for the whole song
-    xl = xlim;
+    xl = xlim(ax);
     set(ax, 'XTick', floor(min(xl)):(max(xl)+1))
     % stretch out time
     set(ax,'DataAspectRatio',[1/timestretch 1 1])
+    set(ax, 'YTickLabel', [], 'ZTickLabel', [])
 
+    % create coordinates for a rectangle patch that is the where the player
+    % stands
+    X = zeros(1,4);
+    yl = ylim(ax);
+    zl = zlim(ax);
+    Y = [yl(1) yl(2) yl(2) yl(1)];
+    Z = [zl(1) zl(1) zl(2) zl(2)];
+    handle = patch(X, Y, Z, 'k');
+    handle.FaceAlpha = 0.2;
+    
     drawnow
-

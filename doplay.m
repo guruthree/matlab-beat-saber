@@ -37,13 +37,6 @@ timer = tic;
 yl = ylim;
 zl = zlim;
 
-% create coordinates for a rectangle patch that is the where the player
-% stands
-X = zeros(1,4);
-Y = [yl(1) yl(2) yl(2) yl(1)];
-Z = [zl(1) zl(1) zl(2) zl(2)];
-tzero = patch(X, Y, Z, 'k');
-set(tzero, 'FaceAlpha', 0.2);
 
 if displayfps == 1
     texth = text(1, 1, '0 fps', 'Units', 'normalized', 'HorizontalAlignment', 'right', 'VerticalAlignment', 'top');
