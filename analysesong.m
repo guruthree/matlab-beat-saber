@@ -51,32 +51,3 @@ function [allPxx, F, ptime] = analysesong(Y, Fs)
     end
     fprintf('done. ');
     toc
-
-
-% return
-
-
-%%
-% fprintf('playing')
-% pause(3)
-% fprintf('...\n')
-% timer = tic;
-% stime = toc(timer);
-% tat = 1;
-% play(player) % CurrentSample? TimerFcn?
-% try
-%     while stime < xl(2)
-%         xlim(xlimits+stime);
-% %         k = find(stime >= stime, 1, 'last');
-% %         set(ph, 'XData', stime(k), 'YData', signal(k))
-%         set(lh, 'XData', [1 1]*stime)
-%         drawnow
-% 
-%         % looping
-%         lasttime = stime;
-%         stime = toc(timer);
-%         fps = 1/(stime-lasttime);
-%     end
-% catch
-%     stop(player)
-% end
