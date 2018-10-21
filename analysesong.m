@@ -1,14 +1,17 @@
 function [allPxx, F, ptime] = analysesong(Y, Fs)
 
-
 %     FFTlength = 2048;
 %     FFTlength = 4096;
-%     FFTlength = 8192;
-    FFTlength = 16384;
+    FFTlength = 8192;
+%     FFTlength = 16384;
 %     FFToverlap = 1;
 %     FFToverlap = 2;
 %     FFToverlap = 4;
     FFToverlap = 8;
+%     FFToverlap = 16;
+
+    nopar = 0;
+%     nopar = 1;
 
     numFFTs = floor(length(Y)/FFTlength/FFToverlap)*FFToverlap*FFToverlap;
     ptime = (0:(numFFTs-1))*(FFTlength/FFToverlap)/Fs;
@@ -18,7 +21,7 @@ function [allPxx, F, ptime] = analysesong(Y, Fs)
     fprintf('doing fft... ');
     % take advantage of parallel if it exists, both inner loops should be
     % the same
-    if ~exist('parfor', 'builtin')
+    if nopar == 1 || ~exist('parfor', 'builtin')
         for ii=1:numFFTs
             
             FFTindex = (ii-1)*(FFTlength/FFToverlap)+1;
