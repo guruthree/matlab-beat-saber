@@ -25,9 +25,7 @@ function handle = displayanalysis(ax, allPxx, F, ptime)
     ylabel(ax, 'Frequency (Hz)')
 
     if ylog == 1
-        yts = get(ax, 'YTick');
-        lab = cellfun(@(x)sprintf('%.0f', x), num2cell(logbase.^yts), 'UniformOutput', 0);
-        set(ax, 'YTickLabel', lab);
+        logticklabels(ax, logbase)
     end
 
     yl = ylim(ax);
@@ -37,5 +35,22 @@ function handle = displayanalysis(ax, allPxx, F, ptime)
 
     xlabel(ax, 'Time (seconds)')
     ylabel(ax, 'Frequency (Hz)')
+    
+    ax.Tag = 'log';
+    h = zoom;
+    h.ActionPostCallback = @(obj,event_obj)cbf(obj,event_obj,logbase);
+    hp = pan;
+    hp.ActionPostCallback = @(obj,event_obj)cbf(obj,event_obj,logbase);
+
+    function logticklabels(myax, mylogbase)
+        yts = get(myax, 'YTick');
+        lab = cellfun(@(x)sprintf('%.0f', x), num2cell(mylogbase.^yts), 'UniformOutput', 0);
+        set(myax, 'YTickLabel', lab);
+    
+    function cbf(~,event_obj,mylogbase)
+        pause(0.001)
+        if strcmp(event_obj.Axes.Tag, 'log')
+            logticklabels(event_obj.Axes, mylogbase)
+        end
     
     drawnow
