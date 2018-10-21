@@ -1,41 +1,53 @@
-function [handle, ptime, samples] = analysesong(Y, Fs)
+function [allPxx, F, ptime] = analysesong(Y, Fs)
 
 
-% FFTlength = 2048;
-% FFTlength = 4096;
-% FFTlength = 8192;
-FFTlength = 16384;
-% FFToverlap = 1;
-% FFToverlap = 2;
-% FFToverlap = 4;
-FFToverlap = 8;
-% numFFTs = floor(length(Y)/(FFTlength/FFToverlap));
-numFFTs = floor(length(Y)/FFTlength/FFToverlap)*FFToverlap*FFToverlap;
-% window = ones(1,FFTlength);
-window = hann(FFTlength);
-allPxx = zeros(numFFTs,FFTlength/2+1);
+%     FFTlength = 2048;
+%     FFTlength = 4096;
+%     FFTlength = 8192;
+    FFTlength = 16384;
+%     FFToverlap = 1;
+%     FFToverlap = 2;
+%     FFToverlap = 4;
+    FFToverlap = 8;
 
-Ymean = mean(Y,2);
-tic
-fprintf('doing fft... ');
-[~, F] = pwelch(1:FFTlength, [], [], FFTlength, Fs); % to get F in case a parfor loop is used
-parfor ii=1:numFFTs
-    FFTindex = (ii-1)*(FFTlength/FFToverlap)+1;
-    subY = Y(FFTindex:FFTindex+FFTlength-1,1); % this is the left channel?
-%     [Pxx,F] = periodogram(subY, window, FFTlength, Fs);
-%     [Pxx, F] = pwelch(subY, [], [], FFTlength, Fs);
-    Pxx = pwelch(subY, [], [], FFTlength, Fs);
-    allPxx(ii,:) = Pxx;
-%     plot(F, Pxx)
-%     xlim([0 1000])
-%     ylim([0 1e-2])
-%     drawnow
-    if mod(ii,100) == 0
-        fprintf('.');
+    numFFTs = floor(length(Y)/FFTlength/FFToverlap)*FFToverlap*FFToverlap;
+    ptime = (0:(numFFTs-1))*(FFTlength/FFToverlap)/Fs;
+    allPxx = zeros(numFFTs,FFTlength/2+1);
+
+    tic
+    fprintf('doing fft... ');
+    % take advantage of parallel if it exists, both inner loops should be
+    % the same
+    if ~exist('parfor', 'builtin')
+        for ii=1:numFFTs
+            
+            FFTindex = (ii-1)*(FFTlength/FFToverlap)+1;
+            subY = Y(FFTindex:FFTindex+FFTlength-1,1); % this is the left channel?
+            % TODO do both audio channels
+            allPxx(ii,:) = pwelch(subY, [], [], FFTlength, Fs);
+
+            if mod(ii,100) == 0
+                fprintf('.');
+            end
+            
+        end
+    else
+        [~, F] = pwelch(1:FFTlength, [], [], FFTlength, Fs); % to get F in case a parfor loop is used
+        parfor ii=1:numFFTs
+            
+            FFTindex = (ii-1)*(FFTlength/FFToverlap)+1;
+            subY = Y(FFTindex:FFTindex+FFTlength-1,1); %#ok<PFBNS> % this is the left channel?
+            % TODO do both audio channels
+            allPxx(ii,:) = pwelch(subY, [], [], FFTlength, Fs);
+
+            if mod(ii,100) == 0
+                fprintf('.');
+            end
+            
+        end
     end
-end
-fprintf('done. ');
-toc
+    fprintf('done. ');
+    toc
 
 
 % return
