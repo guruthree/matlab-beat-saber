@@ -72,8 +72,7 @@ end
 
 %% setup playing
 
-global eepplayers mytime lasttime
-mytime = tic;
+global eepplayers lasttime
 lasttime = 0;
 
 if ~isempty(hitsound)
@@ -84,9 +83,9 @@ if ~isempty(hitsound)
     % rapid succession
     for ii=1:length(eepplayers)
         eepplayers{ii,1} = audioplayer(eepY, eepFs); %#ok<TNMLP>
-        eepplayers{ii,1} = 0;
+        eepplayers{ii,2} = 0;
     end
-    eepplayers{1,1} = 1;
+    eepplayers{1,2} = 1;
     
     % sort all of the hits in order for playing the hitsound
     hits2 = sort(hits);
@@ -99,7 +98,6 @@ end
 
 % setup music player
 player = audioplayer(Y, Fs);
-player.TimerPeriod = 1/5; % target 60 fps?
+player.TimerPeriod = 1/30; % target 60 fps?
 player.TimerFcn = @(object, event_obj)doplay(object, ax, handles, timewindow, stime, samples, hits2);
-% buttons(1).ButtonDownFcn = @()play(player);
 buttons(1).Callback = @(src, event)play(player);
