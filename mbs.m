@@ -6,7 +6,7 @@ clf(fig)
 
 %%
 
-levelfolder = '.'; % folder with Expert.json and a .ogg file
+levelfolder = 'lone digger'; % folder with Expert.json and a .ogg file
 currenttime = 0; % start time
 timewindow = [-1 9]; % focus for zoomed in plots
 hitsound = 'Wild Eep.wav';
@@ -25,6 +25,7 @@ fig.MenuBar = 'none';
 %% setup axes
 ax(1) = axes('Position', [0.05 0.58 0.57 0.4]); % main PSD
 ax(2) = axes('Position', [0.67 0.58 0.32 0.19]); % mini PSD
+% TODO remove mini PSD & increase samples size
 ax(3) = axes('Position', [0.67 0.79 0.32 0.19]); % samples
 ax(4) = axes('Position', [0.05 0.07 0.45 0.45]); % 3d level display
 drawnow
@@ -59,9 +60,11 @@ xlim(ax(4), timewindow+currenttime)
 buttonwidth = 0.05;
 buttonheight = 0.04;
 buttons(1) = uicontrol('Style', 'pushbutton', 'String', 'Play All', 'Units', 'normalized', ...
+    'Position', [0.4 0.02+buttonheight buttonwidth buttonheight]);
+buttons(2) = uicontrol('Style', 'pushbutton', 'String', 'Stop', 'Units', 'normalized', ...
     'Position', [0.4 0.02 buttonwidth buttonheight]);
 
-% TODO stop button
+% TODO toggle scrolling on/off
 % TODO play selection button
 
 if displayfps == 1
@@ -74,6 +77,8 @@ end
 
 global eepplayers lasttime
 lasttime = 0;
+
+% TODO time offset for playback at non-zero start times
 
 if ~isempty(hitsound)
     % open hit sound
@@ -101,3 +106,4 @@ player = audioplayer(Y, Fs);
 player.TimerPeriod = 1/30; % target 60 fps?
 player.TimerFcn = @(object, event_obj)doplay(object, ax, handles, timewindow, stime, samples, hits2);
 buttons(1).Callback = @(src, event)play(player);
+buttons(2).Callback = @(src, event)stop(player);

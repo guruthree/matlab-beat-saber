@@ -17,6 +17,8 @@ function [allPxx, F, ptime] = analysesong(Y, Fs)
     ptime = (0:(numFFTs-1))*(FFTlength/FFToverlap)/Fs;
     allPxx = zeros(numFFTs,FFTlength/2+1);
 
+    % TODO trim allPxx to reduce memory footprint & improve performance
+
     tic
     fprintf('doing fft... ');
     % take advantage of parallel if it exists, both inner loops should be
